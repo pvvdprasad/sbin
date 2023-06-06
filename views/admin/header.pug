@@ -1,0 +1,111 @@
+
+doctype html
+head
+  meta(charset='utf-8')
+  meta(content='width=device-width, initial-scale=1.0' name='viewport')
+  title Surgislate
+  meta(content='' name='description')
+  meta(content='' name='keywords')
+  // Favicons
+  link(href=BASE_PATH+'img/favicon.png' rel='icon')
+  link(href=BASE_PATH+'img/apple-touch-icon.png' rel='apple-touch-icon')
+  // Google Fonts
+  link(rel='preconnect' href='https://fonts.googleapis.com')
+  link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
+  link(href='https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap' rel='stylesheet')
+  // Vendor CSS Files
+  link(href=BASE_PATH+'vendor/bootstrap/css/bootstrap.min.css' rel='stylesheet')
+  link(href=BASE_PATH+'vendor/bootstrap-icons/bootstrap-icons.css' rel='stylesheet')
+  link(href=BASE_PATH+'vendor/aos/aos.css' rel='stylesheet')
+  link(href=BASE_PATH+'vendor/glightbox/css/glightbox.min.css' rel='stylesheet')
+  link(href=BASE_PATH+'vendor/swiper/swiper-bundle.min.css' rel='stylesheet')
+  // Variables CSS Files. Uncomment your preferred     or scheme
+  link(href=BASE_PATH+'css/variables.css' rel='stylesheet')
+  // <link href=BASE_PATH+"css/variables-blue.css" rel="stylesheet">
+  // <link href="css/variables-green.css" rel="stylesheet">
+  // <link href="css/variables-orange.css" rel="stylesheet">
+  // <link href="css/variables-purple.css" rel="stylesheet">
+  // <link href="css/variables-red.css" rel="stylesheet">
+  // <link href="css/variables-pink.css" rel="stylesheet">
+  // Template Main CSS File
+  link(href=BASE_PATH+'css/main.css' rel='stylesheet')
+  style.
+        *{margin: 0;
+      padding: 0;font-family:Calibri}
+      ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      }
+      ul.horizontal {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background-color: #f3f3f3;
+          width:100%;
+            margin: 60px 0 0 0;
+            border: 1px solid #e7e7e7;
+        }
+        ul.gray li a {
+          display: block;
+              or: #666;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          }
+          ul.horizontal li {
+              float: left;
+              margin: 20px 40px;
+            }
+          ul.gray {
+              border: 1px solid #e7e7e7;
+              background-    or: #f3f3f3;
+            }
+          .cbut{margin-left: 20px;
+            border-radius: 20px;
+            font-size: 15px;
+            min-width: 160px;}
+          .blue{background: #003595;
+            color: #FFF;}
+          .grey{background: #FAFAFA;
+            color: #333;border: 1px solid #999;}
+  
+  header#header.header.fixed-top(data-scrollto-offset='0',style='position:absolute')
+    a(href=BASE_PATH+'admin/logout')
+      img(src=BASE_PATH+'images/logout.png',title='Logout',style='width: 40px;float: right;margin-right: 20px;')
+  .container-fluid.d-flex.align-items-center.justify-content-between
+    a.logo.align-items-center(href='index.html',style='position:absolute;top:0')
+      // Uncomment the line below if you also wish to use an image logo
+      // <img src="img/logo.png" alt="">
+    a(href='http://52.14.172.251:3000' style='position: absolute;top: -10px;')
+      img(src=BASE_PATH+'images/logo.png' style='width:55px')
+      div(style='position: absolute;top: 38px;left:33px;font-weight:bold;font-size:15px;width: 95px;')
+        |SMART BIN
+    ul.horizontal
+      li
+        a(href=BASE_PATH+'admin/usermain') User Management
+      li
+        a(href=BASE_PATH+'admin/equipmain') Equipment Management
+
+script(src='https://code.jquery.com/jquery-3.6.0.js')
+//script(src=BASE_PATH+'javascripts/jquery.js', defer='')
+script(src=BASE_PATH+'vendor/bootstrap/js/bootstrap.bundle.min.js')
+script(src=BASE_PATH+'vendor/aos/aos.js')
+script(src=BASE_PATH+'vendor/glightbox/js/glightbox.min.js')
+script(src=BASE_PATH+'vendor/isotope-layout/isotope.pkgd.min.js')
+script(src=BASE_PATH+'vendor/swiper/swiper-bundle.min.js')
+script(src=BASE_PATH+'vendor/php-email-form/validate.js')
+// Template Main JS File
+script(src=BASE_PATH+'js/main.js')      
+script.
+    function o(id){return document.getElementById(id);}
+    function formatPhoneNumber(phoneNumberString) {
+      var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+      var match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
+      if (match) {
+        var intlCode = (match[1] ? '+1 ' : '');
+        return [intlCode, '(', match[2], ') ', match[3], '-', match[4]].join('');
+      }
+      return null;
+    }
