@@ -1,0 +1,218 @@
+include header.pug
+style.
+	.arrow{background-image:url('../images/up-down.png');width:35px;height:33px;cursor:pointer;padding-top:7px}
+	.arrow span{padding-left:45px}
+	.down{background-position:34px -1px;}
+	.up{background-position:1px -1px;}
+	.hidivs{display:none;border:1px solid #e7e7e7;min-height:50px;margin-top:10px;padding:5px}
+	.subdiv{width:45%;margin:10px;float:left}
+	#hiddiv{display:none;position:absolute;border:1px solid #999;width:66%;text-align:left}
+	.subdivddd{padding:10px;width:100%}
+	#rightdiv{text-align:center;padding:10px}
+	.tttdiv{margin:2px 0 0 38px}
+	.miniarrow{background-image:url('../images/up-down-mini.png');width:30px;height:28px;cursor:pointer;padding-top:7px}
+	.miniarrow span{padding-left:45px}
+	.minidown{background-position:28px -1px;}
+	.miniup{background-position:1px -1px;}
+	table{width:100%}
+	th{color:#FFF;background:#003595;padding:3px}
+.row
+	.col-md-3
+		include leftmenu_user.pug
+		
+		.col-md-11(style='border:1px solid #e7e7e7;margin:10px 0 0 20px;padding:0')
+			ul#uuul
+				each element in results
+					li
+						.arrow.up(style='float:left',onclick='callswap(this,"'+element.facility_k_id+'")')
+						.tttdiv= element.name
+						.hidivs(id=element.facility_k_id)
+							table
+								tr
+									td
+										|
+									td
+										a(href='javascript:add_user("'+element.facility_k_id+'")') Add User 
+								tr
+									td(style='vertical-align: top;')
+										.miniarrow.miniup(id=element.facility_k_id+'_utd', onclick='view_user("'+element.facility_k_id+'")')
+									td
+										a(href='javascript:view_user("'+element.facility_k_id+'")') View / Edit Users
+										.hidddd(id=element.facility_k_id+'_uuu')
+								tr
+									td
+										|
+									td
+										a(href='javascript:add_user("'+element.facility_k_id+'")') Assign Bins
+								tr
+									td(style='vertical-align: top;')
+										.miniarrow.miniup(id=element.facility_k_id+'_btd',onclick='view_bin("'+element.facility_k_id+'")')
+									td
+										a(href='javascript:view_bin("'+element.facility_k_id+'")') View / Edit Bins
+										.hidddd(id=element.facility_k_id+'_bbb')
+										
+							br
+						
+	.col-md-8#rightdiv(style='border:1px solid #e7e7e7;margin:12px')
+		form(method='get',onsubmit='return submitform()')
+			.form-group.text-center
+				h2 Add Facility				
+				input#facility_name.form-control(type='text' name='facility_name' placeholder='Enter Facility Name')
+				br
+				input#facility_website.form-control(type='text' name='facility_website' placeholder='Enter Website')
+				br
+				input#facility_phone.form-control(type='text' name='facility_phone' placeholder='Enter Phone')
+				br
+				input#facility_fax.form-control(type='text' name='facility_fax' placeholder='Enter Fax')
+				br
+				input.btn.btn-success(type="submit" value='Save')
+				br
+script.
+	function c(cname){return document.getElementsByClassName(cname)[0];}
+	function callswap(obj,className){
+		
+		objc = o(className);
+		  _tmp = window.getComputedStyle(obj,null).backgroundPosition.trim().split(/\s+/),
+		positions = {
+			'left' : _tmp[0],
+			'top' : _tmp[1]
+		};
+		console.log(positions, positions.left, positions.top);
+		if(positions.left == '1px'){
+			console.log('arrow is up');
+			objc.style.display = 'block';
+			// open
+			obj.style.backgroundPosition = '34px -1px';
+			
+		}else{
+			obj.style.backgroundPosition = '1px -1px';
+			objc.style.display = 'none';
+		}
+		
+	}
+	function catchWords(word){
+		$.post('/admin/showBinsList', {word: word}, function(data){
+			console.log(data);
+			results = data.results;
+			console.log(results); // model: "X", firmware: "khkhkhkh", uuid
+			o('hiddiv').innerHTML = '';
+			o('hiddiv').style.display = 'block';
+			for(i=0;i<results.length;i++)
+				o('hiddiv').innerHTML += '<div class="subdivddd"><input type="checkbox" name="secb" value="'+results[i].uuid+'" />&nbsp;&nbsp;&nbsp;&nbsp;' + results[i].model + '       ' + results[i].firmware + '<div>';
+		});
+	}
+	function amore(ch){
+		arr = document.getElementsByName('secb');
+		ff='';
+		for(i=0;i<arr.length;i++)
+			if(arr[i].checked)
+				ff += arr[i].value+'|';
+		$.post('/admin/assignbins', {id: o('facilityid').value, ff:ff}, function(data){
+			//console.log(data);
+			o('rightdiv').innerHTML = data;
+			if(ch == 2) window.location.href = window.location; 
+			else o('subdivddd').innerHTML = '';
+		});
+	}
+	function showbins(facid){
+		$.post('/admin/showpreBins', {id: facid}, function(data){
+			//console.log(data);
+			o('rightdiv').innerHTML = data + '<input type="hidden" id="facilityid" value="'+facid+'" />';
+		});
+	}
+	function submitformuser(){
+		if(o('cemail').value != o('email').value){
+			alert('Emails did not match');
+		}else{
+			$.post('/admin/adduser', {first_name: o('first_name').value, middle_name: o('middle_name').value, last_name: o('last_name').value, email: o('email').value, cell: o('cell').value, facid:o('facid').value}, function(data){
+				alert('User added successfully');
+				window.location.href = window.location;
+			});
+		}
+		return false;
+	}
+	function add_user(name){console.log(name);o('rightdiv').innerHTML = '<form method="get" onsubmit="return submitformuser()"><div class="form-group text-center"><input class="form-control subdiv" id="first_name" type="text" name="first_name" placeholder="Enter First Name"><input class="form-control subdiv" id="middle_name" type="text" name="middle_name" placeholder="Enter Middle Name"><input class="form-control subdiv" id="last_name" type="text" name="last_name" placeholder="Enter Last Name"><input class="form-control subdiv" id="cell" type="text" name="cell" placeholder="Enter Cell"><input class="form-control subdiv" id="email" type="text" name="email" placeholder="Enter Email"><input class="form-control subdiv" id="cemail" type="text" name="cemail" placeholder="Enter Confirm Email"><br><input type="hidden" name="facid" id="facid" value="'+name+'" /><input class="btn btn-success" type="submit" value="Save"><br></div></form>';}
+	
+	function view_user(name){
+		cele=o(name+'_utd').classList; // Clearview1685192542303_utd
+		//console.log(cele);
+		nextFlag = '';
+		for(i=0;i<cele.length;i++){
+			if(cele[i] == 'minidown'){
+				nextFlag = 'miniup'; break; }
+			if(cele[i] == 'miniup'){
+				nextFlag = 'minidown'; break; }
+		}
+		
+		o(name+'_utd').className = '';
+		o(name+'_utd').classList.add('miniarrow');
+		o(name+'_utd').classList.add(nextFlag);
+		
+		console.log('adding miniarrow ' + nextFlag + ' to ' +name+'_utd');
+		//if(cele=='') // miniarrow minidown
+		objc = o(name+'_uuu');
+		objc.innerHTML = '';
+		//console.log('------1-------');return;
+		if(nextFlag != 'miniup')
+		$.post('/admin/showUsers', {id: name}, function(data){
+			console.log(data);
+			res = data.results;			
+			if(res.length > 0){
+				for(i=0;i<res.length;i++){
+					if(i > 0) objc.innerHTML +='<br >';
+					objc.innerHTML += '<a href="javascript:openuser(\''+res[i]['userid']+'\')">'+res[i]['first name']+'</a><br>';
+				}
+			}			
+		});
+	}
+	
+	function openuser(userid){
+		o('rightdiv').innerHTML = '';
+		$.post('/admin/showRightUser', {userid: userid}, function(data){
+			console.log(data);
+			res = data.results;			
+			if(res.length > 0){
+				o('rightdiv').innerHTML = res;
+			}			
+		});
+	}
+	function view_bin(name){
+		cele=o(name+'_btd').classList; // Clearview1685192542303_utd
+		//console.log(cele);
+		nextFlag = '';
+		for(i=0;i<cele.length;i++){
+			if(cele[i] == 'minidown'){
+				nextFlag = 'miniup'; break; }
+			if(cele[i] == 'miniup'){
+				nextFlag = 'minidown'; break; }
+		}
+		
+		o(name+'_btd').className = '';
+		o(name+'_btd').classList.add('miniarrow');
+		o(name+'_btd').classList.add(nextFlag);
+		
+		objc = o(name+'_bbb');
+		objc.innerHTML = '';
+		$.post('/admin/showBins', {id: name}, function(data){
+			console.log(data);
+			res = data.results;			
+			if(res.length > 0){
+				for(i=0;i<res.length;i++){
+					if(i > 0) objc.innerHTML +='<br >';
+					objc.innerHTML += res[i]['binname'];
+				}
+			}			
+		});
+	}
+	function submitform(){
+		console.log('In the function');
+		$.post('/admin/addFacility', {facility_name: o('facility_name').value, facility_website: o('facility_website').value, facility_phone: o('facility_phone').value, facility_fax: o('facility_fax').value}, function(data){
+			o('facility_name').value = '';
+			o('facility_website').value = '';
+			o('facility_phone').value = '';
+			o('facility_fax').value = '';
+			window.location.href = window.location;
+		});
+		
+		return false;
+	}
