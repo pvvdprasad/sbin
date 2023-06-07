@@ -338,16 +338,21 @@ router.post('/showRightUser', async function(req, res, next) {
 	html = '';
 	
 		
-	for(i=0;i<userresults.length;i++)
+	for(i=0;i<userresults.length;i++){
 		if(userresults[i].userid == id ){
 			sbox = '<div style="background:grey;width:20px;height:20px;margin:0 auto"></div>';
 			if(userresults[i].user_status == 1)
 				sbox = '<div style="background:green;width:20px;height:20px;margin:0 auto"></div>';
 			html = '<table><tr><th>Status</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Cell</th><th>Email</th></tr>';
-			html += '<tr><td>'+sbox+'</td><td>'+userresults[i]['first name']+'</td><td>'+userresults[i]['middle name']+'</td><td>'+userresults[i]['last name']+'</td><td>'+userresults[i].cell+'</td><td>'+userresults[i].email+'</td></tr>';
+			html += '<tr><td style="text-align:center">'+sbox+'</td><td>'+userresults[i]['first name']+'</td><td>'+userresults[i]['middle name']+'</td><td>'+userresults[i]['last name']+'</td><td>'+userresults[i].cell+'</td><td>'+userresults[i].email+'</td></tr></table>';
 			//'';
 			break;
 		}
+	}
+	html += '<br><br><br><br><br>';
+	html += '<a style="float:right" href="javascript:removeuser(\''+id+'\')">Remove User</a>';
+	html += '<br><br><br><br><br>';
+	html += '<input class="btn cbut grey" type="button" onclick="reset_password(\''+id+'\',\''+userresults[i].email+'\')" value="Reset Password" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button"  class="cbut btn blue" onclick="exit_screen()" value="Exit" />';
 	res.send({results:html});
 });
 router.post('/showBins', async function(req, res, next) {
