@@ -26,7 +26,7 @@ style.
 				each element in results
 					li
 						.arrow.up(style='float:left',onclick='callswap(this,"'+element.facility_k_id+'")')
-						.tttdiv= element.fname
+						.tttdiv= element.fname+'('+element.fact_id+')' 
 							i(class='bi bi-pen pendd', onclick='edit_facility("'+element.facility_k_id+'")') Edit
 						.hidivs(id=element.facility_k_id)
 							table

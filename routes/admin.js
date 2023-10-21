@@ -10,10 +10,20 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
+	req.session.destroy();
+    //res.render('admin/login', { BASE_PATH: '../' });
+	
   res.render('admin/login', { BASE_PATH: '../' });
 });
 
-
+function checkAuth(req,res){
+	rr = false;
+	if(!req.session || !req.session.userid){
+		rr = true;
+		res.render('admin/login', { BASE_PATH: '../' });
+	}
+	return rr;
+}
 
 
 router.get('/settings', function(req, res, next) {
@@ -271,7 +281,7 @@ router.post('/addbin', async function(req, res, next) {
 router.get('/usermain', async function(req, res, next) {
 	// AWS.config.update(config.aws_remote_config);
 	// const docClient = new AWS.DynamoDB.DocumentClient();
-	
+	if(checkAuth(req,res)) return;
   //if(req.session.role_name === undefined){ res.render('admin/login'); }
   //if(typeof req.session === "undefined"){res.redirect('logout');}else{ if(req.session.role_name == '') res.redirect('logout'); }
 	
@@ -283,12 +293,61 @@ router.get('/usermain', async function(req, res, next) {
 router.get('/equipmain', async function(req, res, next) {
 	// AWS.config.update(config.aws_remote_config);
 	// const docClient = new AWS.DynamoDB.DocumentClient();
-	
+	if(checkAuth(req,res)) return;
  // var results = await scanTable(config.aws_facility_table_name);
  // console.log(results);
   res.render('admin/equipmain', { BASE_PATH: '../', results: {}});
 });
 
+function get_unique_id(name){
+	namArr = name.split(' ');
+	fstr = '';
+	if(namArr.length < 2){
+		fstr += name.substring(0, 4);
+	}else{
+		for(var i=0;i<namArr.length;i++){
+		   fstr += namArr[i].substring(0, 2);
+		}
+		
+	}
+	return(fstr.toUpperCase() + Math.ceil(Math.random()*1000));
+}
+/*
+router.get('/updateFact_id', async function(req, res, next) {
+	AWS.config.update(config.aws_remote_config);
+	const docClient = new AWS.DynamoDB.DocumentClient();
+	
+	var binresults = await scanTable(config.aws_facility_table_name);
+	for(i=0;i<binresults.length;i++){
+		console.log(binresults[i].fact_id);
+		if(binresults[i].fact_id == '' || binresults[i].fact_id == undefined){
+			console.log('In the if......');
+			fact_id = get_unique_id(binresults[i].fname);
+			console.log('In the fact_id for :'+fact_id+':'+binresults[i].facility_k_id);
+			const params = {
+				TableName: config.aws_facility_table_name,
+				Key: {
+					"facility_k_id": binresults[i].facility_k_id 
+				},
+			   UpdateExpression: "set fact_id=:fact_id",
+			ExpressionAttributeValues:{
+				":fact_id":fact_id
+			},
+			ReturnValues:"UPDATED_NEW"
+			};
+
+			docClient.update(params, function(err, data) {
+				console.log('Update query executed.........');
+				if (err) console.log(err);
+				else console.log(data);
+				//break;
+			});
+			
+		}
+	}
+	res.send({'msg':'Done'});
+});
+*/
 router.post('/addFacility', function(req, res, next) {
     console.log('in  the addFacility...');
     console.log(req.body);
@@ -306,7 +365,8 @@ router.post('/addFacility', function(req, res, next) {
 		'fname' :  reqs.facility_name,
 		'fax' :  reqs.facility_fax,
 		'cell' : reqs.facility_phone,
-		'website' :  reqs.facility_website
+		'website' :  reqs.facility_website,
+		'fact_id': get_unique_id(reqs.facility_name)
 	  }
 	};
 
@@ -540,15 +600,26 @@ router.post('/loadFacDropdown', async function(req, res, next) {
 router.post('/changefacildd', async function(req, res, next) {
 	var binresults = await scanTable(config.aws_bins_table_name);
 	
+	arrbin = []; fff = true;
+	console.log('req.body.id---------------:'+req.body.id);
+	
+	html = '<table><tr><th>fggfh Model</th><th>Mac ID</th><th>Firmware</th><th>Status</th><th>Manufactured Date</th><th>Action</th></tr>';
+	for(i=0;i<binresults.length;i++)
+		if(binresults[i].fac_id == req.body.id){
+			//arrbin.push(binresults[i]);
+				html += '<tr><td>'+binresults[i].model+'</td><td>'+binresults[i].macid+'</td><td>'+binresults[i].firmware+'</td><td><img style="width:22px" src="../images/signal.png" onclick="showslots()" /></td><td>'+binresults[i].mandate+'</td><td><a href="javascript:decommi(\''+binresults[i].uuid+'\')">Decommission</a><div class="hidassdiv" id="'+binresults[i].uuid+'_hid"><span class="spanclose" onclick="closediv(\''+binresults[i].uuid+'_hid\')">X</span><a href="javascript:seleop(1,'+binresults[i].uuid+')">Malfunction</a><br><a href="javascript:seleop(2,'+binresults[i].uuid+')">Damaged</a><br><a href="javascript:seleop(3,'+binresults[i].uuid+')">Other</a></div></td></tr>';				
+		}
+	
+	/*
 	html = '<tr><th>Model</th><th>Mac ID</th><th>Firmware</th><th>Status</th><th>Manufactured Date</th><th>Action</th></tr>';
 	for(i=0;i<binresults.length;i++)
 		if(binresults[i].fac_id == req.body.id)
 			//arrbin.push(binresults[i]);
 			html += '<tr><td>'+binresults[i].model+'</td><td>'+binresults[i].macid+'</td><td>'+binresults[i].firmware+'</td><td><img style="width:25px" src="../images/nosignal.png" /></td><td>'+binresults[i].mandate+'</td><td>Decommission</td></tr>';
 		
+	*/
 	
-	
-	//html += '</table>';
+	html += '</table>';
 	res.send({html:html});
 });
 	
@@ -803,6 +874,9 @@ router.post('/showhightedbin', async function(req, res, next) {
 router.post('/postlogin', function(req, res, next) {
     console.log('in  the validation login...');
     console.log(req.body);
+	
+	
+  
 	AWS.config.update(config.aws_remote_config);
 	console.log('success db connected ttttttttttttt111222333');
 	
@@ -834,7 +908,7 @@ router.post('/postlogin', function(req, res, next) {
 								
 				req.session.role_id = 1;
 				req.session.role_name = 'admin';
-				
+				req.session.userid = 1;
 				res.redirect('usermain');
 				break;
 			}else{
