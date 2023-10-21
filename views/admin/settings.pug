@@ -1,0 +1,52 @@
+include header.pug
+style.
+	.arrow{background-image:url('../images/up-down.png');width:35px;height:33px;cursor:pointer;padding-top:7px}
+	.arrow span{padding-left:45px}
+	.down{background-position:34px -1px;}
+	.up{background-position:1px -1px;}
+	.hidivs{display:none;border:1px solid #e7e7e7;min-height:50px;margin-top:10px;padding:5px}
+	.subdiv{width:45%;margin:10px;float:left}
+	#hiddiv{display:none;position:absolute;border:1px solid #999;width:66%;text-align:left;z-index:999}
+	.subdivddd{padding:10px;width:100%}
+	#rightdiv{text-align:center;padding:10px;position:relative}
+	.tttdiv{margin:2px 0 0 38px}
+	#left_fac_div{display:none;}	.miniarrow{background-image:url('../images/up-down-mini.png');width:30px;height:28px;cursor:pointer;padding-top:7px}
+	.miniarrow span{padding-left:45px}
+	.minidown{background-position:28px -1px;}
+	.miniup{background-position:1px -1px;}
+	table{width:100%}
+	.pendd{margin-left:10px;cursor:pointer;color:#666;font-size:12px}
+	th{color:#FFF;background:#003595;padding:3px}
+.row
+	.col-md-11(style='margin:0 0 0 50px;text-align:center')
+		form(method='get',onsubmit='return submitform()')
+			.form-group.text-center(style='position:relative')
+				br
+				h2 Change Password		
+				br
+				br
+				input#new_password.form-control(type='password' name='new_password' placeholder='New Password')
+				br
+				input#confirm_password.form-control(type='password' name='confirm_password' placeholder='Enter Confirm Password')
+				br
+				br
+				input.btn.cbut.blue.bbbutons(type="submit" value='Update')
+				br
+script.
+	function o(id){return document.getElementById(id);}
+	function submitform(){
+		np = o('new_password').value;
+		cp = o('confirm_password').value;
+		
+		if(np == cp){
+		$.post('/admin/changepassword', {np:np}, function(data){
+			console.log(data);
+			//o('rightdiv').innerHTML = data.html;
+			alert('Password changed');
+			window.location=window.location.href;
+		});
+		}else{
+			alert('Passwords Mismatched');
+		}
+		return false;
+	}
